@@ -1,81 +1,131 @@
-﻿using System;
+﻿
+using System;
 
-namespace SavingsCalculator
+namespace MiniBankingSystem
 {
-    // Class representing the Savings Calculator
-    class Savings
+    // Class 1: Represents a bank account
+    class BankAccount
     {
-        // Properties
-        public decimal Principal { get; set; }
-        public decimal InterestRate { get; set; }
-        public decimal Duration { get; set; }
+        // Property: stores the account balance
+        public decimal Balance { get; private set; }
 
-        // Constructor
-        public Savings(decimal principal, decimal interestRate, decimal duration)
+        // Constructor: sets the starting balance
+        public BankAccount(decimal initialBalance)
         {
-            Principal = principal;
-            InterestRate = interestRate;
-            Duration = duration;
+            Balance = initialBalance;
         }
 
-        // Method to calculate simple interest
-        public decimal CalculateInterest()
+        // Method 1: Check balance
+        public void CheckBalance()
         {
-            return (Principal * InterestRate * Duration) / 100;
+            Console.WriteLine($"\nYour balance is: UGX {Balance:N0}");
         }
 
-        // Method to calculate final account balance
-        public decimal CalculateFinalBalance()
+        // Method 2: Deposit money
+        public void Deposit(decimal amount)
         {
-            return Principal + CalculateInterest();
+            if (amount <= 0)
+            {
+                Console.WriteLine("Please enter a valid deposit amount.");
+            }
+            else
+            {
+                Balance += amount;
+                Console.WriteLine("Deposit successful!");
+                Console.WriteLine($"Amount deposited: UGX {amount:N0}");
+                Console.WriteLine($"New balance: UGX {Balance:N0}");
+            }
         }
 
-        // Method to display results
-        public void DisplayResults()
+        // Method 3: Withdraw money
+        public void Withdraw(decimal amount)
         {
-            decimal interest = CalculateInterest();
-            decimal finalBalance = CalculateFinalBalance();
-
-            Console.WriteLine("\n========== SAVINGS CALCULATOR ==========");
-            Console.WriteLine($"Principal Amount : {Principal:C}");
-            Console.WriteLine($"Interest Rate    : {InterestRate}%");
-            Console.WriteLine($"Duration         : {Duration} years");
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"Simple Interest  : {interest:C}");
-            Console.WriteLine($"Final Balance    : {finalBalance:C}");
-            Console.WriteLine("========================================");
+            if (amount <= 0)
+            {
+                Console.WriteLine("Please enter a valid withdrawal amount.");
+            }
+            else if (amount > Balance)
+            {
+                Console.WriteLine("Insufficient balance!");
+            }
+            else
+            {
+                Balance -= amount;
+                Console.WriteLine("Withdrawal successful!");
+                Console.WriteLine($"Amount withdrawn: UGX {amount:N0}");
+                Console.WriteLine($"Remaining balance: UGX {Balance:N0}");
+            }
         }
     }
 
+    // Class 2: Controls the banking application
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("========================================");
-            Console.WriteLine("       WELCOME TO SAVINGS CALCULATOR");
-            Console.WriteLine("========================================\n");
+            // Create a BankAccount object
+            BankAccount account = new BankAccount(1000m);
 
-            // Capture user input
-            Console.Write("Enter principal amount: ");
-            decimal principal = Convert.ToDecimal(Console.ReadLine());
+            bool running = true;
 
-            Console.Write("Enter annual interest rate (%): ");
-            decimal interestRate = Convert.ToDecimal(Console.ReadLine());
+            Console.WriteLine("==================================");
+            Console.WriteLine("     WELCOME TO MINI BANKING");
+            Console.WriteLine("==================================");
 
-            Console.Write("Enter duration (years): ");
-            decimal duration = Convert.ToDecimal(Console.ReadLine());
+            while (running)
+            {
+                Console.WriteLine("\n========== BANK MENU ==========");
+                Console.WriteLine("1. Check Balance");
+                Console.WriteLine("2. Deposit Money");
+                Console.WriteLine("3. Withdraw Money");
+                Console.WriteLine("4. Exit");
+                Console.WriteLine("===============================");
 
-            // Create Savings object
-            Savings savings = new Savings(
-                principal,
-                interestRate,
-                duration
-            );
+                Console.Write("Choose an option (1-4): ");
+                string choice = Console.ReadLine();
 
-            // Display calculated results
-            savings.DisplayResults();
+                switch (choice)
+                {
+                    case "1":
+                        account.CheckBalance();
+                        break;
 
-            Console.WriteLine("\nPress any key to exit...");
+                    case "2":
+                        Console.Write("Enter amount to deposit: UGX ");
+                        if (decimal.TryParse(Console.ReadLine(), out decimal depositAmount))
+                        {
+                            account.Deposit(depositAmount);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input. Enter a number.");
+                        }
+                        break;
+
+                    case "3":
+                        Console.Write("Enter amount to withdraw: UGX ");
+                        if (decimal.TryParse(Console.ReadLine(), out decimal withdrawalAmount))
+                        {
+                            account.Withdraw(withdrawalAmount);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input. Enter a number.");
+                        }
+                        break;
+
+                    case "4":
+                        running = false;
+                        Console.WriteLine("Thank you for using Mini Banking!");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Please select 1-4.");
+                        break;
+                }
+            }
+
+            Console.WriteLine("\nPress any key to close...");
             Console.ReadKey();
         }
     }
